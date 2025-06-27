@@ -1,0 +1,61 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  phone     String    @unique
+  password  String
+  createAt  DateTime  @default(now()) @map("createAt")
+  updatedAt DateTime  @default(now()) @map("updatedAt") @updatedAt
+
+  questions Question[]
+
+  @@map("users")
+}
+
+model Question {
+  id           Int       @id @default(autoincrement())
+  userId       Int       @map("userId")
+  questionText String    @map("questionText")
+  isDbRealted  Boolean?  @map("isDbRealted")
+  generatedSql String?   @map("generatedSql")
+  llmResponse  String?   @map("llmResponse")
+  createdAt    DateTime  @default(now()) @map("createdAt")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("questions")
+}
+
+model Chocolate {
+  id       Int      @id @default(autoincrement())
+  customer String
+  country  String
+  product  String
+  saleDate DateTime @map("saleDate")
+  revenue  Float
+  quantity Int
+
+  @@map("chocolates")
+}
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  name         String
+  category     String
+  stockQty     Int      @map("stock_qty")
+  unitPrice    Float    @map("unit_price")
+  warehouse    String
+  supplierName String   @map("supplier_name")
+  lastUpdated  DateTime @map("last_updated")
+
+  @@map("products")
+}
