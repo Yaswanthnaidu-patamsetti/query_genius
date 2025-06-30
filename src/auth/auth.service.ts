@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { LoginDto, RegisterDto } from './dto';
-import { CustomException } from 'src/common/exception/custom.exception';
+import { CustomException } from '../common/exception/custom.exception';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 @Injectable()

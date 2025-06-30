@@ -12,7 +12,7 @@ import { ChatService } from './chat.service';
 import { ChatRequestDto } from './dto';
 
 import { JwtGuard } from '../auth/guard';
-import { GetUser } from 'src/auth/decorators';
+import { GetUser } from '../auth/decorators';
 
 @UseGuards(JwtGuard)
 @Controller('chat')
