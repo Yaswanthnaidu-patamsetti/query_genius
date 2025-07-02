@@ -12,7 +12,7 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('AI Chat SQL Assistant API')
+    .setTitle('Query Genius API')
     .setDescription(
       'This project provides a SQL assistant powered by AI with user authentication and history tracking.',
     )
