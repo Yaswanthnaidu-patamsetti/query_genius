@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -10,6 +6,8 @@ import { LoginDto, RegisterDto } from './dto';
 import { CustomException } from '../common/exception/custom.exception';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -17,10 +15,10 @@ export class AuthService {
     private config: ConfigService,
     private jwt: JwtService,
   ) {}
+
   async signup(RegisterDto: RegisterDto) {
     try {
       const hashedPassword = await argon.hash(RegisterDto.password);
-
       const newUser = await this.prisma.user.create({
         data: {
           name: RegisterDto.name.trim(),
@@ -29,7 +27,7 @@ export class AuthService {
           password: hashedPassword,
         },
       });
-      const { password, ...userDetails } = newUser;
+      const { password: _, ...userDetails } = newUser;
       return { message: 'Registered Successfully', data: userDetails };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -42,23 +40,28 @@ export class AuthService {
   }
 
   async login(LoginDto: LoginDto) {
-    const existingUser = await this.prisma.user.findFirst({
+    const existingUser: User | null = await this.prisma.user.findFirst({
       where: {
         OR: [{ email: LoginDto.input }, { phone: LoginDto.input }],
       },
     });
+
     if (!existingUser) {
       throw new CustomException('User not found', 409);
     }
+
     const validPassword = await argon.verify(
       existingUser.password,
       LoginDto.password,
     );
+
     if (!validPassword) {
       throw new CustomException('Invalid Credentials', 403);
     }
+
     return this.token(existingUser.id, existingUser.email);
   }
+
   async token(
     userId: number,
     email: string,
