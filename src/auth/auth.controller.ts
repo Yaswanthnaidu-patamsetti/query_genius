@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto } from './dto';
 import {
@@ -14,6 +14,11 @@ import {
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Get('/')
+  getHello(): string {
+    return 'Hello World!';
+  }
 
   @Post('signup')
   @ApiOperation({ summary: 'Register a new User' })
