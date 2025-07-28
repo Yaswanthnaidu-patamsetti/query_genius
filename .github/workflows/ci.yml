@@ -1,0 +1,36 @@
+name: Query_genius_CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: cache npm modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Install Dependencies
+        run: npm ci
+      - name: Create .env file from Github Secret
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+      - name: Lint code
+        run: npm run lint
+      - name: Test the code
+        run: npm run test
+      - name: Build code
+        run: npm run build
